@@ -10,36 +10,50 @@
                 <v-spacer></v-spacer>
               </v-toolbar>
               <v-card-text>
-                <v-form ref="form" autocomplete="off">
+                <v-form
+                  id="register-form"
+                  ref="form"
+                  v-model="valid"
+                  lazy-validation
+                  @submit.prevent="submit"
+                  @input="resetError"
+                >
                   <v-text-field
-                    label="Full Name"
-                    name="name"
+                    v-model="register.firstName"
+                    label="First Name"
+                    name="firstName"
                     prepend-icon="person"
                     type="text"
                     required
+                    :rules="firstNameRules"
                   ></v-text-field>
                   <v-text-field
+                    v-model="register.lastName"
+                    label="Last Name"
+                    name="lastName"
+                    prepend-icon="person"
+                    type="text"
+                    required
+                    :rules="lastNameRules"
+                  ></v-text-field>
+                  <v-text-field
+                    v-model="register.email"
                     label="e-mail"
                     name="email"
                     prepend-icon="email"
                     type="text"
                     required
-                  ></v-text-field>
-
-                  <v-text-field
-                    label="Mobile Number"
-                    name="phone"
-                    prepend-icon="phone"
-                    type="text"
-                    required
+                    :rules="emailRules"
                   ></v-text-field>
 
                   <v-text-field
                     id="password"
+                    v-model="register.password"
                     label="Password"
                     name="password"
                     prepend-icon="lock"
                     type="password"
+                    :rules="passwordRules"
                   ></v-text-field>
                   <v-text-field
                     id="confirmpassword"
@@ -47,12 +61,16 @@
                     name="confirmpassword"
                     prepend-icon="lock"
                     type="password"
+                    :rules="confirmpasswordRules"
                   ></v-text-field>
                 </v-form>
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="primary">Login</v-btn>
+                <v-btn to="/login">Login</v-btn>
+                <v-btn color="primary" type="submit" form="register-form"
+                  >Register</v-btn
+                >
               </v-card-actions>
             </v-card>
           </v-flex>
@@ -61,19 +79,4 @@
     </v-content>
   </v-app>
 </template>
-<script>
-export default {
-  layout: 'empty',
-  data() {
-    return {}
-  },
-  mounted() {},
-  methods: {},
-  head() {
-    const title = 'Register'
-    return {
-      title
-    }
-  }
-}
-</script>
+<script src="./register.js"></script>
