@@ -1,20 +1,21 @@
+require('dotenv').config()
 const colors = require('vuetify/es5/util/colors').default
-
+const apiPrefix = process.env.API_PREFIX || '/api'
 module.exports = {
   mode: 'spa',
   /*
    ** Headers of the page
    */
   head: {
-    titleTemplate: '%s - ' + process.env.npm_package_name,
-    title: process.env.npm_package_name || '',
+    titleTemplate: '%s - ' + process.env.APP,
+    title: process.env.APP || '',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       {
         hid: 'description',
         name: 'description',
-        content: process.env.npm_package_description || ''
+        content: process.env.APP_DESCRIPTION || ''
       }
     ],
     link: [
@@ -36,7 +37,7 @@ module.exports = {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: [],
+  plugins: ['~/plugins/axios-port.js'],
   /*
    ** Nuxt.js dev-modules
    */
@@ -52,6 +53,7 @@ module.exports = {
   modules: [
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
+    '@nuxtjs/auth',
     '@nuxtjs/pwa',
     // Doc: https://github.com/nuxt-community/dotenv-module
     '@nuxtjs/dotenv'
@@ -60,11 +62,48 @@ module.exports = {
    ** Axios module configuration
    ** See https://axios.nuxtjs.org/options
    */
-  axios: {},
+  axios: {
+    baseURL: process.env.BASE_URL + apiPrefix,
+    https: process.env.HTTPS,
+    retry: { retries: 3 }
+  },
   /*
    ** vuetify module configuration
    ** https://github.com/nuxt-community/vuetify-module
    */
+  auth: {
+    resetOnError: true,
+    redirect: {
+      login: '/login',
+      logout: '/login',
+      callback: '/login',
+      home: '/'
+    },
+    strategies: {
+      local: {
+        endpoints: {
+          register: {
+            url: '/auth/register',
+            method: 'post'
+          },
+          login: {
+            url: '/auth/login',
+            method: 'post',
+            propertyName: 'token'
+          },
+          logout: false,
+          user: { url: '/auth/user', method: 'get', propertyName: 'data' }
+        }
+        // tokenRequired: true,
+        // tokenType: 'bearer'
+        // autoFetchUser: true
+      }
+    },
+    plugins: ['~/plugins/auth.js']
+  },
+  router: {
+    middleware: ['auth']
+  },
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
     theme: {
@@ -81,6 +120,9 @@ module.exports = {
         }
       }
     }
+  },
+  env: {
+    baseURL: process.env.BASE_URL
   },
   /*
    ** Build configuration
